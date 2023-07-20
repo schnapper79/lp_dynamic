@@ -138,7 +138,7 @@ func do_exhaustive_search(items []Item, allowed_weight, next_index int) ([]Item,
 		best_items = other_items
 		best_value = other_value
 	}
-	return best_items, best_value, function_calls
+	return best_items, best_value, function_calls+1
 }
 
 func main() {
