@@ -225,11 +225,11 @@ func do_rods_technique(items []Item, allowed_weight, next_index, best_value, cur
 	if items[next_index].blocked_by == -1 {
 		if current_weight+items[next_index].weight <= allowed_weight {
 			items[next_index].is_selected = true
-			sol_items1, sol_value1, sol_calls1 = do_branch_and_bound(items, allowed_weight, next_index+1, best_value, current_value+items[next_index].value, current_weight+items[next_index].weight, remaing_value-items[next_index].value)
+			sol_items1, sol_value1, sol_calls1 = do_rods_technique(items, allowed_weight, next_index+1, best_value, current_value+items[next_index].value, current_weight+items[next_index].weight, remaing_value-items[next_index].value)
 			if sol_value1 > best_value {
 				best_value = sol_value1
 			}
-		} 
+		}
 	}
 	var sol_items2 []Item
 	var sol_value2 int
@@ -237,7 +237,7 @@ func do_rods_technique(items []Item, allowed_weight, next_index, best_value, cur
 
 	items[next_index].is_selected = false
 	block_items(items[next_index], items)
-	sol_items2, sol_value2, sol_calls2 = do_branch_and_bound(items, allowed_weight, next_index+1, best_value, current_value, current_weight, remaing_value-items[next_index].value)
+	sol_items2, sol_value2, sol_calls2 = do_rods_technique(items, allowed_weight, next_index+1, best_value, current_value, current_weight, remaing_value-items[next_index].value)
 	unblock_items(items[next_index], items)
 	sol_calls1 += sol_calls2
 	if sol_value1 > sol_value2 {
