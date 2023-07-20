@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"sort"
 	"time"
 )
 
@@ -248,6 +249,32 @@ func do_rods_technique(items []Item, allowed_weight, next_index, best_value, cur
 	}
 }
 
+func rods_technique_sorted(items []Item, allowed_weight int) ([]Item, int, int) {
+	best_value := 0
+	current_value := 0
+	current_weight := 0
+	remaing_value := 0
+	for _, item := range items {
+		remaing_value += item.value
+	}
+
+	make_block_lists(items)
+	// Sort so items with longer blocked lists come first.
+	sort.Slice(items, func(i, j int) bool {
+		return len(items[i].block_list) > len(items[j].block_list)
+	})
+
+	// Reset the items' IDs.
+	for i := range items {
+		items[i].id = i
+	}
+
+	// Rebuild the blocked lists with the new indices.
+	make_block_lists(items)
+
+	return do_rods_technique(items, allowed_weight, 0, best_value, current_value, current_weight, remaing_value)
+}
+
 func make_block_lists(items []Item) {
 	for i, item := range items {
 		items[i].block_list = make([]int, 0)
@@ -311,5 +338,12 @@ func main() {
 	} else {
 		fmt.Println("*** Rod's technique ***")
 		run_algorithm(rods_technique, items, allowed_weight)
+	}
+	// Rod's sorted technique
+	if num_items > 350 { // Only use Rod's technique if num_items <= 85.
+		fmt.Println("Too many items for Rod's sorted  technique\n")
+	} else {
+		fmt.Println("*** Rod's sorted technique ***")
+		run_algorithm(rods_technique_sorted, items, allowed_weight)
 	}
 }
