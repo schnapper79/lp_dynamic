@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const num_items = 25 // A reasonable value for exhaustive search.
+const num_items = 20 // A reasonable value for exhaustive search.
 
 const min_value = 1
 const max_value = 10
@@ -131,11 +131,11 @@ func branch_and_bound(items []Item, allowed_weight int) ([]Item, int, int) {
 func do_branch_and_bound(items []Item, allowed_weight, next_index, best_value, current_value, current_weight, remaing_value int) ([]Item, int, int) {
 	if next_index >= len(items) {
 		copied_Items := copy_items(items)
-		return copied_Items, solution_value(copied_Items, allowed_weight), 1
+		return copied_Items, current_value, 1
 	}
 
 	if current_value+remaing_value <= best_value {
-		return nil, 0, 1
+		return nil, current_value, 1
 	}
 
 	var sol_items1 []Item
@@ -145,6 +145,9 @@ func do_branch_and_bound(items []Item, allowed_weight, next_index, best_value, c
 	if current_weight+items[next_index].weight <= allowed_weight {
 		items[next_index].is_selected = true
 		sol_items1, sol_value1, sol_calls1 = do_branch_and_bound(items, allowed_weight, next_index+1, best_value, current_value+items[next_index].value, current_weight+items[next_index].weight, remaing_value-items[next_index].value)
+		if sol_value1 > best_value {
+			best_value = sol_value1
+		}
 	} else {
 		sol_items1, sol_value1, sol_calls1 = nil, 0, 1
 	}
@@ -152,18 +155,15 @@ func do_branch_and_bound(items []Item, allowed_weight, next_index, best_value, c
 	var sol_items2 []Item
 	var sol_value2 int
 	var sol_calls2 int
-	if current_value+items[next_index].value > best_value {
-		items[next_index].is_selected = false
-		sol_items2, sol_value2, sol_calls2 = do_branch_and_bound(items, allowed_weight, next_index+1, best_value, current_value, current_weight, remaing_value-items[next_index].value)
-	} else {
-		sol_items2, sol_value2, sol_calls2 = nil, 0, 1
-	}
+
+	items[next_index].is_selected = false
+	sol_items2, sol_value2, sol_calls2 = do_branch_and_bound(items, allowed_weight, next_index+1, best_value, current_value, current_weight, remaing_value-items[next_index].value)
 
 	sol_calls1 += sol_calls2
 	if sol_value1 > sol_value2 {
-		return sol_items1, sol_value1, sol_calls1
+		return sol_items1, sol_value1, sol_calls1 + 1
 	} else {
-		return sol_items2, sol_value2, sol_calls1
+		return sol_items2, sol_value2, sol_calls1 + 1
 	}
 
 }
