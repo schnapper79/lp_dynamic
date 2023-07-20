@@ -282,8 +282,8 @@ func make_block_lists(items []Item) {
 			if i == j {
 				continue
 			}
-			if item.weight >= other_item.weight && item.value <= other_item.value {
-				items[i].block_list = append(items[i].block_list, j)
+			if item.weight <= other_item.weight && item.value >= other_item.value {
+				items[i].block_list = append(items[i].block_list, items[j].id)
 			}
 		}
 	}
